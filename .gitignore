@@ -1,5 +1,7 @@
 __pycache__
 .venv
 .vscode
+.idea
 configs.json
+token.json
 *.xlsx

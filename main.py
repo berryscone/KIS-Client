@@ -1,27 +1,22 @@
 import json
-import copy
-import requests
+
 from config import Config
-from auth import auth
+from api.auth import auth
+from api.price import get_price
+from api.account import get_oversee_balance, get_account_balance
+
+
+def dump_json_dict(json_dict: dict):
+    return json.dumps(json_dict, indent=2, ensure_ascii=False)
+
 
 cfg = Config()
 access_token, access_token_expired_at = auth()
-tr_id = "HHDFS00000300"
-url = f"{cfg.BaseURL}/uapi/overseas-price/v1/quotations/price"
-params = {
-    "AUTH": "",
-    "EXCD": "NAS",
-    "SYMB": "AAPL",
-}
+apple_price = get_price(access_token, "NAS", "AAPL")
+print(dump_json_dict(apple_price))
 
-headers = cfg.get_base_headers()
-headers["authorization"] = f"Bearer {access_token}"
-headers["appkey"] = cfg.AppKey
-headers["appsecret"] = cfg.SecretKey
-headers["tr_id"] = tr_id
+oversee_balance = get_oversee_balance(access_token, "NASD", "USD")
+print(dump_json_dict(oversee_balance))
 
-res = requests.get(url, headers=headers, params=params)
-if res.status_code != 200:
-    print(f"error - {res.json()}")
-
-res_json = res.json()
+account_balance = get_account_balance(access_token)
+print(account_balance)
